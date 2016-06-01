@@ -1,0 +1,23 @@
+{
+  "name": "pldin601/php-result",
+  "description": "Abstraction that represends successful or errorful result",
+  "minimum-stability": "dev",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Roman Gemini",
+      "email": "roman_gemini@ukr.net"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Tests\\": "tests/"
+    },
+    "files": [
+      "src/result.php"
+    ]
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^5.3"
+  }
+}
