@@ -9,13 +9,24 @@ Fully built on functions.
 
 ## Functions:
 ```php
-\Result\ok($value);
-\Result\fail($value);
+// Produce ok/fail result
+$ok = \Result\ok($value);
+$fail = \Result\fail($value);
+
+// Wrap results of callable into result
+\Result\tryCatch($callable, $exceptionTransformCallable, $value);
+\Result\notNull($callable);
+\Result\resultify($callable);
+
+// Check wheither result is ok/fail
 \Result\isOk($result);
 \Result\isFail($result);
+
+// Evaluate callable if result is ok/fail
 \Result\ifOk($result, $callable);
 \Result\ifFail($result, $callable);
-\Result\tryCatch($callable, $exceptionTransformCallable, $value);
+
+// Work with transformers
 \Result\bind($result, $callable);
 \Result\pipeline(...$callables);
 ```
