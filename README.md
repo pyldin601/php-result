@@ -5,7 +5,7 @@
 [![Issue Count](https://codeclimate.com/github/pldin601/php-result/badges/issue_count.svg)](https://codeclimate.com/github/pldin601/php-result)
 
 Abstraction that represents ok/error result. Functional alternative to exceptions.
-Fully built on using functions.
+Fully built on functions.
 
 ## Examples:
 ```php
