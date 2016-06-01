@@ -110,7 +110,7 @@ function isFail(callable $result)
 }
 
 /**
- * Binds $callable to result if it is success.
+ * Binds $callable to ok result.
  *
  * @param callable $result
  * @param callable $callable
@@ -122,6 +122,21 @@ function bind(callable $result, callable $callable)
         return $result;
     }
     return $callable(valueOf($result));
+}
+
+/**
+ * Maps $callable to ok result.
+ *
+ * @param callable $result
+ * @param callable $callable
+ * @return callable|\Closure
+ */
+function map(callable $result, callable $callable)
+{
+    if (isFail($result)) {
+        return $result;
+    }
+    return ok($callable(valueOf($result)));
 }
 
 /**

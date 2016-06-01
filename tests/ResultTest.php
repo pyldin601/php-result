@@ -8,6 +8,7 @@ use function Result\ifFail;
 use function Result\ifOk;
 use function Result\isFail;
 use function Result\isOk;
+use function Result\map;
 use function Result\ok;
 use function Result\pipeline;
 use function Result\tryCatch;
@@ -122,6 +123,23 @@ class ResultTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTrue(isFail($result));
         $this->assertEquals('Division by zero', valueOf($result));
+    }
+
+    public function testMap()
+    {
+        $mapFunction = function ($value) {
+            return $value * 2;
+        };
+
+        $result = map(ok(5), $mapFunction);
+
+        $this->assertTrue(isOk($result));
+        $this->assertEquals(10, valueOf($result));
+
+        $result = map(fail(10), $mapFunction);
+
+        $this->assertTrue(isFail($result));
+        $this->assertEquals(10, valueOf($result));
     }
 
     public function testPipeline()
