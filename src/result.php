@@ -125,21 +125,6 @@ function bind(callable $result, callable $callable)
 }
 
 /**
- * Maps $callable to ok result.
- *
- * @param callable $result
- * @param callable $callable
- * @return callable|\Closure
- */
-function map(callable $result, callable $callable)
-{
-    if (isFail($result)) {
-        return $result;
-    }
-    return ok($callable(valueOf($result)));
-}
-
-/**
  * Creates pipeline.
  *
  * @param array ...$callables

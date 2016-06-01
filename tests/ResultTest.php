@@ -125,23 +125,6 @@ class ResultTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('Division by zero', valueOf($result));
     }
 
-    public function testMap()
-    {
-        $mapFunction = function ($value) {
-            return $value * 2;
-        };
-
-        $result = map(ok(5), $mapFunction);
-
-        $this->assertTrue(isOk($result));
-        $this->assertEquals(10, valueOf($result));
-
-        $result = map(fail(10), $mapFunction);
-
-        $this->assertTrue(isFail($result));
-        $this->assertEquals(10, valueOf($result));
-    }
-
     public function testPipeline()
     {
         $f1 = function ($value) {

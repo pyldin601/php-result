@@ -7,7 +7,7 @@
 Abstraction that represents ok/error result. Functional alternative to exceptions.
 Fully built on functions.
 
-## Examples:
+## Functions:
 ```php
 \Result\ok($value);
 \Result\fail($value);
@@ -17,6 +17,5 @@ Fully built on functions.
 \Result\ifFail($result, $callable);
 \Result\tryCatch($callable, $exceptionTransformCallable, $value);
 \Result\bind($result, $callable);
-\Result\map($result, $callable);
 \Result\pipeline(...$callables);
 ```
