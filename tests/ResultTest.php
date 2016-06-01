@@ -68,11 +68,15 @@ class ResultTest extends \PHPUnit_Framework_TestCase
 
     public function testNotNull()
     {
-        $result = notNull(function () { return 'foo'; });
+        $result = notNull(function () {
+            return 'foo';
+        });
         $this->assertTrue(isOk($result));
         $this->assertEquals('foo', valueOf($result));
 
-        $result = notNull(function () { return null; });
+        $result = notNull(function () {
+            return null;
+        });
         $this->assertTrue(isFail($result));
         $this->assertNull(valueOf($result));
     }
