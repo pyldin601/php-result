@@ -8,14 +8,15 @@ use function Result\ifFail;
 use function Result\ifOk;
 use function Result\isFail;
 use function Result\isOk;
-use function Result\map;
+use function Result\notNull;
+use function Result\resultify;
 use function Result\ok;
 use function Result\pipeline;
 use function Result\tryCatch;
 use function Result\typeOf;
 use function Result\valueOf;
 
-use const Result\RESULT_ERROR;
+use const Result\RESULT_FAIL;
 use const Result\RESULT_OK;
 
 class ResultTest extends \PHPUnit_Framework_TestCase
@@ -43,7 +44,7 @@ class ResultTest extends \PHPUnit_Framework_TestCase
         $result = fail('foo');
 
         $this->assertEquals('foo', valueOf($result));
-        $this->assertEquals(RESULT_ERROR, typeOf($result));
+        $this->assertEquals(RESULT_FAIL, typeOf($result));
         $this->assertTrue(isFail($result));
 
         $flag = false;
@@ -54,6 +55,26 @@ class ResultTest extends \PHPUnit_Framework_TestCase
         });
 
         $this->assertTrue($flag);
+    }
+
+    public function testResultify()
+    {
+        $result = resultify(function () {
+            return 'hello';
+        });
+        $this->assertTrue(isOk($result));
+        $this->assertEquals('hello', valueOf($result));
+    }
+
+    public function testNotNull()
+    {
+        $result = notNull(function () { return 'foo'; });
+        $this->assertTrue(isOk($result));
+        $this->assertEquals('foo', valueOf($result));
+
+        $result = notNull(function () { return null; });
+        $this->assertTrue(isFail($result));
+        $this->assertNull(valueOf($result));
     }
 
     public function testBadMethodCall()

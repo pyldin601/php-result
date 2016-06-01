@@ -3,10 +3,10 @@
 namespace Result;
 
 const RESULT_OK = 'ok';
-const RESULT_ERROR = 'error';
+const RESULT_FAIL = 'fail';
 
 /**
- * Creates success result with $value.
+ * Creates ok result with $value.
  *
  * @param $value
  * @return \Closure
@@ -26,7 +26,7 @@ function ok($value = null)
 }
 
 /**
- * Creates error result with $value.
+ * Creates fail result with $value.
  *
  * @param $value
  * @return \Closure
@@ -38,7 +38,7 @@ function fail($value = null)
             case 'value':
                 return $value;
             case 'type':
-                return RESULT_ERROR;
+                return RESULT_FAIL;
             default:
                 throw new \BadMethodCallException;
         }
@@ -46,8 +46,8 @@ function fail($value = null)
 }
 
 /**
- * Evaluates $callable and returns success with result or
- * returns error if $callable threw an exception.
+ * Evaluates $callable and wraps result into ok or
+ * returns fail if exception was thrown.
  *
  * @param callable $callable
  * @param callable|null $exceptionTransform
@@ -63,6 +63,33 @@ function tryCatch(callable $callable, callable $exceptionTransform = null, $valu
             ? fail($exception)
             : fail($exceptionTransform($exception));
     }
+}
+
+/**
+ * Executes $callable and wraps result into ok.
+ *
+ * @param callable $callable
+ * @param array ...$args
+ * @return \Closure
+ */
+function resultify(callable $callable, ...$args)
+{
+    return ok($callable(...$args));
+}
+
+/**
+ * Executes $callable and wraps result into ok
+ * if result is not null. Otherwise returns fail.
+ *
+ * @param callable $callable
+ * @param array ...$args
+ * @return \Closure
+ */
+function notNull(callable $callable, ...$args)
+{
+    $result = $callable(...$args);
+
+    return is_null($result) ? fail() : ok($result);
 }
 
 /**
@@ -88,7 +115,7 @@ function valueOf(callable $result)
 }
 
 /**
- * Returns whether result is success.
+ * Returns whether result is ok.
  *
  * @param callable $result
  * @return bool
@@ -99,14 +126,14 @@ function isOk(callable $result)
 }
 
 /**
- * Returns whether result is error.
+ * Returns whether result is fail.
  *
  * @param callable $result
  * @return bool
  */
 function isFail(callable $result)
 {
-    return typeOf($result) == RESULT_ERROR;
+    return typeOf($result) == RESULT_FAIL;
 }
 
 /**
@@ -125,7 +152,7 @@ function bind(callable $result, callable $callable)
 }
 
 /**
- * Creates pipeline.
+ * Creates pipeline with transform functions.
  *
  * @param array ...$callables
  * @return \Closure
@@ -138,7 +165,7 @@ function pipeline(...$callables)
 }
 
 /**
- * Evaluates $callable if result is success.
+ * Evaluates $callable if result is ok.
  *
  * @param $result
  * @param callable $callable
@@ -151,7 +178,7 @@ function ifOk($result, callable $callable)
 }
 
 /**
- * Evaluates $callable if result is error.
+ * Evaluates $callable if result is fail.
  *
  * @param $result
  * @param callable $callable
