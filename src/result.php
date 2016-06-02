@@ -159,7 +159,7 @@ function bind(callable $result, callable $callable)
  */
 function pipeline(...$callables)
 {
-    return function ($initialValue) use ($callables) {
+    return function ($initialValue = null) use ($callables) {
         return array_reduce($callables, 'Result\bind', ok($initialValue));
     };
 }
