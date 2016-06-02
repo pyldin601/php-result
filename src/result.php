@@ -46,18 +46,18 @@ function fail($value = null)
 }
 
 /**
- * Evaluates $callable and wraps result into ok or
- * returns fail if exception was thrown.
+ * Invokes $callable and wraps result into ok or
+ * exception into fail if thrown.
  *
  * @param callable $callable
  * @param callable|null $exceptionTransform
- * @param null $value
+ * @param array ...$value
  * @return \Closure
  */
-function tryCatch(callable $callable, callable $exceptionTransform = null, $value = null)
+function tryCatch(callable $callable, callable $exceptionTransform = null, ...$value)
 {
     try {
-        return ok($callable($value));
+        return ok($callable(...$value));
     } catch (\Exception $exception) {
         return is_null($exceptionTransform)
             ? fail($exception)
@@ -66,7 +66,7 @@ function tryCatch(callable $callable, callable $exceptionTransform = null, $valu
 }
 
 /**
- * Executes $callable and wraps result into ok.
+ * Invokes $callable and wraps result into ok.
  *
  * @param callable $callable
  * @param array ...$args
@@ -78,7 +78,7 @@ function resultify(callable $callable, ...$args)
 }
 
 /**
- * Executes $callable and wraps result into ok
+ * Invokes $callable and wraps result into ok
  * if result is not null. Otherwise returns fail.
  *
  * @param callable $callable
@@ -165,12 +165,12 @@ function pipeline(...$callables)
 }
 
 /**
- * Evaluates $callable if result is ok.
+ * Invokes $callable if result is ok.
  *
- * @param $result
+ * @param callable $result
  * @param callable $callable
  */
-function ifOk($result, callable $callable)
+function ifOk(callable $result, callable $callable)
 {
     if (isOk($result)) {
         $callable(valueOf($result));
@@ -178,12 +178,12 @@ function ifOk($result, callable $callable)
 }
 
 /**
- * Evaluates $callable if result is fail.
+ * Invokes $callable if result is fail.
  *
- * @param $result
+ * @param callable $result
  * @param callable $callable
  */
-function ifFail($result, callable $callable)
+function ifFail(callable $result, callable $callable)
 {
     if (isFail($result)) {
         $callable(valueOf($result));
@@ -191,13 +191,13 @@ function ifFail($result, callable $callable)
 }
 
 /**
- * Returns value of ok result or throws value of fail.
+ * Returns value of result or throws exception.
  *
- * @param $result
- * @param $exceptionClass
+ * @param callable $result
+ * @param string $exceptionClass
  * @return mixed
  */
-function getOrThrow($result, $exceptionClass = \Exception::class)
+function getOrThrow(callable $result, $exceptionClass = \Exception::class)
 {
     if (isOk($result)) {
         return valueOf($result);
