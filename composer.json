@@ -1,9 +1,13 @@
 {
   "name": "pldin601/php-result",
-  "description": "Abstraction that represends successful or errorful result",
+  "description": "Abstraction that represends ok/fail result primitives",
   "minimum-stability": "dev",
   "license": "MIT",
   "authors": [
+    {
+      "name": "Cyril Sadovnik",
+      "email": "cyril.sadovnik@gmail.com"
+    },
     {
       "name": "Roman Gemini",
       "email": "roman_gemini@ukr.net"
