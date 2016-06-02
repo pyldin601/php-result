@@ -22,9 +22,12 @@ $fail = \Result\fail($value);
 \Result\isOk($result);
 \Result\isFail($result);
 
-// Evaluate callable if result is ok/fail
+// Invoke callable if result is ok/fail
 \Result\ifOk($result, $callable);
 \Result\ifFail($result, $callable);
+
+// Extract result or throw exception
+\Result\getOrThrow($result, $exceptionClass);
 
 // Work with transformers
 \Result\bind($result, $callable);
