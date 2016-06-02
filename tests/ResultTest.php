@@ -4,6 +4,7 @@ namespace Tests;
 
 use function Result\bind;
 use function Result\fail;
+use function Result\getOrThrow;
 use function Result\ifFail;
 use function Result\ifOk;
 use function Result\isFail;
@@ -177,5 +178,22 @@ class ResultTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTrue(isFail($result));
         $this->assertEquals('Error', valueOf($result));
+    }
+
+    public function testGetOrThrow()
+    {
+        $ok = ok('foo');
+        $fail = fail('bar');
+
+        $value = getOrThrow($ok);
+
+        $this->assertEquals('foo', $value);
+
+        try {
+            getOrThrow($fail);
+            $this->fail();
+        } catch (\Exception $e) {
+            $this->assertEquals('bar', $e->getMessage());
+        }
     }
 }

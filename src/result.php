@@ -189,3 +189,18 @@ function ifFail($result, callable $callable)
         $callable(valueOf($result));
     }
 }
+
+/**
+ * Returns value of ok result or throws value of fail.
+ *
+ * @param $result
+ * @param $exceptionClass
+ * @return mixed
+ */
+function getOrThrow($result, $exceptionClass = \Exception::class)
+{
+    if (isOk($result)) {
+        return valueOf($result);
+    }
+    throw new $exceptionClass(valueOf($result));
+}
