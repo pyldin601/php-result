@@ -52,7 +52,7 @@ use Result as R;
 We create pipeline that reads file by name, proceeds it's content
 and saves result into other file. 
 */
-$pipeline = R\pipeline('readFile', 'processData', makeFileWriter('/tmp/output_file'));
+$pipeline = R\pipeline('readFile', 'proceedContent', makeFileWriter('/tmp/output_file'));
 
 /*
 Call pipeline
@@ -70,7 +70,7 @@ ok result, otherwise return fail result with error message.
 function readFile($filename)
 {
     if (file_exists($filename)) {
-        return R\ok(file_get_contents($filename);
+        return R\ok(file_get_contents($filename));
     }
     
     return R\fail("Can't read the file!");
@@ -81,9 +81,14 @@ Do something with the content. We pass content into our function
 "doSomethingWithContent" which returns processed content
 or throws an exception if content couldn't be processed.
 */
-function processContent($content)
+function proceedContent($content)
 {
-    return R\tryCatch('doSomethingWithData', null, $content);
+    $transform = function ($exception) 
+    {
+        return $exception->getMessage();
+    };
+    
+    return R\tryCatch('doSomethingWithContent', $transform, $content);
 }
 
 /*
@@ -97,7 +102,7 @@ function makeFileWriter($filename)
         $bytesWritten = file_put_contents($filename, $content);
         
         return $bytesWritten === false
-            ? R\fail("Can't write the file!")
+            ? R\fail("Can't save the file!")
             : R\ok();
     }
 }
