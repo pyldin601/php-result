@@ -2,20 +2,7 @@
 
 namespace Tests;
 
-use function Result\bind;
-use function Result\fail;
-use function Result\getOrThrow;
-use function Result\ifFail;
-use function Result\ifOk;
-use function Result\isFail;
-use function Result\isOk;
-use function Result\notNull;
-use function Result\resultify;
-use function Result\ok;
-use function Result\pipeline;
-use function Result\tryCatch;
-use function Result\typeOf;
-use function Result\valueOf;
+use Result as R;
 
 use const Result\RESULT_FAIL;
 use const Result\RESULT_OK;
@@ -24,15 +11,15 @@ class ResultTest extends \PHPUnit_Framework_TestCase
 {
     public function testSuccessResult()
     {
-        $result = ok('foo');
+        $result = R\ok('foo');
 
-        $this->assertEquals('foo', valueOf($result));
-        $this->assertEquals(RESULT_OK, typeOf($result));
-        $this->assertTrue(isOk($result));
+        $this->assertEquals('foo', R\valueOf($result));
+        $this->assertEquals(RESULT_OK, R\typeOf($result));
+        $this->assertTrue(R\isOk($result));
 
         $flag = false;
 
-        ifOk($result, function ($value) use (&$flag) {
+        R\ifOk($result, function ($value) use (&$flag) {
             $this->assertEquals('foo', $value);
             $flag = true;
         });
@@ -42,15 +29,15 @@ class ResultTest extends \PHPUnit_Framework_TestCase
 
     public function testErrorResult()
     {
-        $result = fail('foo');
+        $result = R\fail('foo');
 
-        $this->assertEquals('foo', valueOf($result));
-        $this->assertEquals(RESULT_FAIL, typeOf($result));
-        $this->assertTrue(isFail($result));
+        $this->assertEquals('foo', R\valueOf($result));
+        $this->assertEquals(RESULT_FAIL, R\typeOf($result));
+        $this->assertTrue(R\isFail($result));
 
         $flag = false;
 
-        ifFail($result, function ($value) use (&$flag) {
+        R\ifFail($result, function ($value) use (&$flag) {
             $this->assertEquals('foo', $value);
             $flag = true;
         });
@@ -60,32 +47,32 @@ class ResultTest extends \PHPUnit_Framework_TestCase
 
     public function testResultify()
     {
-        $result = resultify(function () {
+        $result = R\resultify(function () {
             return 'hello';
         });
-        $this->assertTrue(isOk($result));
-        $this->assertEquals('hello', valueOf($result));
+        $this->assertTrue(R\isOk($result));
+        $this->assertEquals('hello', R\valueOf($result));
     }
 
     public function testNotNull()
     {
-        $result = notNull(function () {
+        $result = R\notNull(function () {
             return 'foo';
         });
-        $this->assertTrue(isOk($result));
-        $this->assertEquals('foo', valueOf($result));
+        $this->assertTrue(R\isOk($result));
+        $this->assertEquals('foo', R\valueOf($result));
 
-        $result = notNull(function () {
+        $result = R\notNull(function () {
             return null;
         });
-        $this->assertTrue(isFail($result));
-        $this->assertNull(valueOf($result));
+        $this->assertTrue(R\isFail($result));
+        $this->assertNull(R\valueOf($result));
     }
 
     public function testBadMethodCall()
     {
-        $r1 = ok();
-        $r2 = fail();
+        $r1 = R\ok();
+        $r2 = R\fail();
 
         try {
             $r1('foo');
@@ -102,95 +89,95 @@ class ResultTest extends \PHPUnit_Framework_TestCase
 
     public function testTryCatch()
     {
-        $result = tryCatch(function () {
+        $result = R\tryCatch(function () {
             return 'foo';
         });
 
 
-        $this->assertTrue(isOk($result));
-        $this->assertEquals('foo', valueOf($result));
+        $this->assertTrue(R\isOk($result));
+        $this->assertEquals('foo', R\valueOf($result));
 
-        $result = tryCatch(function () {
+        $result = R\tryCatch(function () {
             throw new \Exception('bar');
         });
 
-        $this->assertTrue(isFail($result));
-        $this->assertInstanceOf(\Exception::class, valueOf($result));
+        $this->assertTrue(R\isFail($result));
+        $this->assertInstanceOf(\Exception::class, R\valueOf($result));
 
-        $result = tryCatch(function () {
+        $result = R\tryCatch(function () {
             throw new \Exception('baz');
         }, function (\Exception $exception) {
             return $exception->getMessage();
         });
 
-        $this->assertTrue(isFail($result));
-        $this->assertEquals('baz', valueOf($result));
+        $this->assertTrue(R\isFail($result));
+        $this->assertEquals('baz', R\valueOf($result));
     }
 
     public function testBind()
     {
         $bindFunction = function ($value) {
             return $value != 0
-                ? ok(100 / $value)
-                : fail('Division by zero');
+                ? R\ok(100 / $value)
+                : R\fail('Division by zero');
         };
 
-        $result = bind(ok(5), $bindFunction);
+        $result = R\bind(R\ok(5), $bindFunction);
 
-        $this->assertTrue(isOk($result));
-        $this->assertEquals(20, valueOf($result));
+        $this->assertTrue(R\isOk($result));
+        $this->assertEquals(20, R\valueOf($result));
 
-        $result = bind(fail('foo'), $bindFunction);
+        $result = R\bind(R\fail('foo'), $bindFunction);
 
-        $this->assertTrue(isFail($result));
-        $this->assertEquals('foo', valueOf($result));
+        $this->assertTrue(R\isFail($result));
+        $this->assertEquals('foo', R\valueOf($result));
 
-        $result = bind(ok(0), $bindFunction);
+        $result = R\bind(R\ok(0), $bindFunction);
 
-        $this->assertTrue(isFail($result));
-        $this->assertEquals('Division by zero', valueOf($result));
+        $this->assertTrue(R\isFail($result));
+        $this->assertEquals('Division by zero', R\valueOf($result));
     }
 
     public function testPipeline()
     {
         $f1 = function ($value) {
-            return ok($value * 2);
+            return R\ok($value * 2);
         };
 
         $f2 = function () {
-            return fail('Error');
+            return R\fail('Error');
         };
 
         $f3 = function ($value) {
-            return ok($value + 10);
+            return R\ok($value + 10);
         };
 
-        $pipeline = pipeline($f1, $f3);
+        $pipeline = R\pipeline($f1, $f3);
 
         $result = $pipeline(5);
 
-        $this->assertTrue(isOk($result));
-        $this->assertEquals(20, valueOf($result));
+        $this->assertTrue(R\isOk($result));
+        $this->assertEquals(20, R\valueOf($result));
 
-        $pipeline = pipeline($f1, $f2, $f3);
+        $pipeline = R\pipeline($f1, $f2, $f3);
 
         $result = $pipeline(5);
 
-        $this->assertTrue(isFail($result));
-        $this->assertEquals('Error', valueOf($result));
+        $this->assertTrue(R\isFail($result));
+        $this->assertEquals('Error', R\valueOf($result));
     }
 
     public function testGetOrThrow()
     {
-        $ok = ok('foo');
-        $fail = fail('bar');
+        $ok = R\ok('foo');
+        $fail = R\fail('bar');
 
-        $value = getOrThrow($ok);
+        $value = R\getOrThrow($ok);
 
         $this->assertEquals('foo', $value);
 
         try {
-            getOrThrow($fail);
+            R\getOrThrow($fail);
             $this->fail();
         } catch (\Exception $e) {
             $this->assertEquals('bar', $e->getMessage());
