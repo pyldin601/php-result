@@ -4,29 +4,37 @@
 [![Test Coverage](https://codeclimate.com/github/pldin601/php-result/badges/coverage.svg)](https://codeclimate.com/github/pldin601/php-result/coverage)
 [![Issue Count](https://codeclimate.com/github/pldin601/php-result/badges/issue_count.svg)](https://codeclimate.com/github/pldin601/php-result)
 
-Abstraction that represents ok/error result. Functional alternative to exceptions.
-Fully built on functions.
+Result is an abstraction used for returning and propagating errors.
+It has two variants: `ok`, representing success and containing a value,
+and `fail`, representing error and containing an error value.
+Inspired by Rust's module `std::result`.
 
 ## Functions:
 ```php
-// Produce ok/fail result
+// Create result by hands
 $ok = \Result\ok($value);
 $fail = \Result\fail($value);
 
-// Wrap results of callable into result
+// Create result from results of execution a callable
+
+// If callable throws an exception
 \Result\tryCatch($callable, $exceptionTransformCallable, $value);
+
+// If callable returns NULL on fail
 \Result\notNull($callable);
+
+// In any other case
 \Result\resultify($callable);
 
-// Check wheither result is ok/fail
+// Check whether result is ok or fail
 \Result\isOk($result);
 \Result\isFail($result);
 
-// Invoke callable if result is ok/fail
+// Invoke callable if result is ok or fail
 \Result\ifOk($result, $callable);
 \Result\ifFail($result, $callable);
 
-// Extract result or throw exception
+// Raise value from result or throw exception on fail
 \Result\getOrThrow($result, $exceptionClass);
 
 // Work with transformers

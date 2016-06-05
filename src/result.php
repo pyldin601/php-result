@@ -5,8 +5,13 @@ namespace Result;
 const RESULT_OK = 'ok';
 const RESULT_FAIL = 'fail';
 
+const VALUE_METHOD = 'value';
+const TYPE_METHOD = 'type';
+
+const REDUCE_FUNCTION = 'Result\bind';
+
 /**
- * Creates ok result with $value.
+ * Creates `ok` result with wrapped value.
  *
  * @param $value
  * @return \Closure
@@ -15,9 +20,9 @@ function ok($value = null)
 {
     return function ($method) use ($value) {
         switch ($method) {
-            case 'value':
+            case VALUE_METHOD:
                 return $value;
-            case 'type':
+            case TYPE_METHOD:
                 return RESULT_OK;
             default:
                 throw new \BadMethodCallException;
@@ -26,7 +31,7 @@ function ok($value = null)
 }
 
 /**
- * Creates fail result with $value.
+ * Creates `fail` result with wrapped $value.
  *
  * @param $value
  * @return \Closure
@@ -35,9 +40,9 @@ function fail($value = null)
 {
     return function ($method) use ($value) {
         switch ($method) {
-            case 'value':
+            case VALUE_METHOD:
                 return $value;
-            case 'type':
+            case TYPE_METHOD:
                 return RESULT_FAIL;
             default:
                 throw new \BadMethodCallException;
@@ -46,8 +51,12 @@ function fail($value = null)
 }
 
 /**
- * Invokes $callable and wraps result into ok or
- * exception into fail if thrown.
+ * If your $callable throws an exception on failure, it
+ * wraps the exception into `fail` result. Otherwise it
+ * returns `ok` with result of $callable.
+ *
+ * You can optionally provide an exception transformation
+ * function to cast the exception to the necessary form.
  *
  * @param callable $callable
  * @param callable|null $exceptionTransform
@@ -58,15 +67,18 @@ function tryCatch(callable $callable, callable $exceptionTransform = null, ...$v
 {
     try {
         return ok($callable(...$value));
-    } catch (\Exception $exception) {
-        return is_null($exceptionTransform)
-            ? fail($exception)
-            : fail($exceptionTransform($exception));
+    } catch (\Throwable $exception) {
+        if (is_callable($exceptionTransform)) {
+            $transformedException = $exceptionTransform($exception);
+            return fail($transformedException);
+        }
+        return fail($exception);
     }
 }
 
 /**
- * Invokes $callable and wraps result into ok.
+ * It invokes a $callable and wraps it's returning value
+ * into `ok` type of result.
  *
  * @param callable $callable
  * @param array ...$args
@@ -78,8 +90,9 @@ function resultify(callable $callable, ...$args)
 }
 
 /**
- * Invokes $callable and wraps result into ok
- * if result is not null. Otherwise returns fail.
+ * If your function returns NULL in case of fail,
+ * it returns a `fail` result with no value. In other
+ * case it behaves like `resultify` or `tryCatch`.
  *
  * @param callable $callable
  * @param array ...$args
@@ -115,7 +128,7 @@ function valueOf(callable $result)
 }
 
 /**
- * Returns whether result is ok.
+ * Returns whether result is `ok`.
  *
  * @param callable $result
  * @return bool
@@ -126,7 +139,7 @@ function isOk(callable $result)
 }
 
 /**
- * Returns whether result is fail.
+ * Returns whether result is `fail`.
  *
  * @param callable $result
  * @return bool
@@ -137,7 +150,7 @@ function isFail(callable $result)
 }
 
 /**
- * Binds $callable to ok result.
+ * Binds $callable to `ok` result.
  *
  * @param callable $result
  * @param callable $callable
@@ -152,7 +165,7 @@ function bind(callable $result, callable $callable)
 }
 
 /**
- * Creates pipeline with transform functions.
+ * Creates pipeline with functions.
  *
  * @param array ...$callables
  * @return \Closure
@@ -160,12 +173,12 @@ function bind(callable $result, callable $callable)
 function pipeline(...$callables)
 {
     return function ($initialValue = null) use ($callables) {
-        return array_reduce($callables, 'Result\bind', ok($initialValue));
+        return array_reduce($callables, REDUCE_FUNCTION, ok($initialValue));
     };
 }
 
 /**
- * Invokes $callable if result is ok.
+ * Invokes $callable if result is `ok`.
  *
  * @param callable $result
  * @param callable $callable
@@ -178,7 +191,7 @@ function ifOk(callable $result, callable $callable)
 }
 
 /**
- * Invokes $callable if result is fail.
+ * Invokes $callable if result is `fail`.
  *
  * @param callable $result
  * @param callable $callable
@@ -191,7 +204,7 @@ function ifFail(callable $result, callable $callable)
 }
 
 /**
- * Returns value of result or throws exception.
+ * Raises value from `ok` result or throws an exception on `fail`.
  *
  * @param callable $result
  * @param string $exceptionClass
