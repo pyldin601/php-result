@@ -49,8 +49,8 @@ R\pipeline(...$callables);
 use Result as R;
 
 /*
-We create pipe which reads file my name, process content
-and saves return into other file. 
+We create pipeline that reads file my name, proceeds it's content
+and saves result into other file. 
 */
 $pipeline = R\pipeline('readFile', 'processData', makeFileWriter('/tmp/output_file'));
 
