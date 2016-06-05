@@ -9,7 +9,7 @@ It has two variants: `ok`, representing success and containing a value,
 and `fail`, representing error and containing an error value.
 Inspired by Rust's module `std::result`.
 
-## Functions:
+## Functions
 ```php
 // Create result by hands
 $ok = \Result\ok($value);
