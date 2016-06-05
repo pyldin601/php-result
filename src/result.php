@@ -11,19 +11,23 @@ const TYPE_METHOD = 'type';
 const REDUCE_FUNCTION = 'Result\bind';
 
 /**
- * Creates `ok` result with wrapped value.
+ * Internal function.
  *
- * @param $value
+ * Creates result with given type and value.
+ *
+ * @param string $type
+ * @param mixed $value
  * @return \Closure
+ * @throws \BadMethodCallException
  */
-function ok($value = null)
+function create($type, $value)
 {
-    return function ($method) use ($value) {
+    return function ($method) use ($type, $value) {
         switch ($method) {
             case VALUE_METHOD:
                 return $value;
             case TYPE_METHOD:
-                return RESULT_OK;
+                return $type;
             default:
                 throw new \BadMethodCallException;
         }
@@ -31,23 +35,25 @@ function ok($value = null)
 }
 
 /**
+ * Creates `ok` result with wrapped value.
+ *
+ * @param mixed $value
+ * @return \Closure
+ */
+function ok($value = null)
+{
+    return create(RESULT_OK, $value);
+}
+
+/**
  * Creates `fail` result with wrapped $value.
  *
- * @param $value
+ * @param mixed $value
  * @return \Closure
  */
 function fail($value = null)
 {
-    return function ($method) use ($value) {
-        switch ($method) {
-            case VALUE_METHOD:
-                return $value;
-            case TYPE_METHOD:
-                return RESULT_FAIL;
-            default:
-                throw new \BadMethodCallException;
-        }
-    };
+    return create(RESULT_FAIL, $value);
 }
 
 /**
