@@ -11,33 +11,95 @@ Inspired by Rust's module `std::result`.
 
 ## Functions
 ```php
+use Result as R;
+
 // Create result by hands
-$ok = \Result\ok($value);
-$fail = \Result\fail($value);
+$ok = R\ok($value);
+$fail = R\fail($value);
 
 // Create result from results of execution a callable
 
 // If callable throws an exception
-\Result\tryCatch($callable, $exceptionTransformCallable, $value);
+R\tryCatch($callable, $exceptionTransformCallable, $value);
 
 // If callable returns NULL on fail
-\Result\notNull($callable);
+R\notNull($callable);
 
 // In any other case
-\Result\resultify($callable);
+R\resultify($callable);
 
 // Check whether result is ok or fail
-\Result\isOk($result);
-\Result\isFail($result);
+R\isOk($result);
+R\isFail($result);
 
 // Invoke callable if result is ok or fail
-\Result\ifOk($result, $callable);
-\Result\ifFail($result, $callable);
+R\ifOk($result, $callable);
+R\ifFail($result, $callable);
 
 // Raise value from result or throw exception on fail
-\Result\getOrThrow($result, $exceptionClass);
+R\getOrThrow($result, $exceptionClass);
 
-// Work with transformers
-\Result\bind($result, $callable);
-\Result\pipeline(...$callables);
+// Work with pipelines
+R\bind($result, $callable);
+R\pipeline(...$callables);
+```
+
+## Pipeline example
+```php
+use Result as R;
+
+/*
+We create pipe which reads file my name, process content
+and saves return into other file. 
+*/
+$pipeline = R\pipeline('readFile', 'processData', makeFileWriter('/tmp/output_file'));
+
+/*
+Call pipeline
+*/
+$result = $pipeline('/tmp/input_file');
+
+R\ifFail($result, function ($error) {
+    fwrite(STDERR, $error);
+});
+
+/*
+Read the file. If file exists return content wrapped into
+ok result, otherwise return fail result with error message.
+*/
+function readFile($filename)
+{
+    if (file_exists($filename)) {
+        return R\ok(file_get_contents($filename);
+    }
+    
+    return R\fail("Can't read the file!");
+}
+
+/*
+Do something with the content. We pass content into our function
+"doSomethingWithContent" which returns processed content
+or throws an exception if content couldn't be processed.
+*/
+function processContent($content)
+{
+    return R\tryCatch('doSomethingWithData', null, $content);
+}
+
+/*
+Make file writer. It returns ok if file saved successfully
+or fail when save returned error.
+*/
+function makeFileWriter($filename)
+{
+    return function ($content) use ($filename)
+    {
+        $bytesWritten = file_put_contents($filename, $content);
+        
+        return $bytesWritten === false
+            ? R\fail("Can't write the file!")
+            : R\ok();
+    }
+}
+
 ```
