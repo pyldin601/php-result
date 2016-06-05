@@ -67,7 +67,7 @@ function tryCatch(callable $callable, callable $exceptionTransform = null, ...$v
 {
     try {
         return ok($callable(...$value));
-    } catch (\Throwable $exception) {
+    } catch (\Exception $exception) {
         if (is_callable($exceptionTransform)) {
             $transformedException = $exceptionTransform($exception);
             return fail($transformedException);
