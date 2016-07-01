@@ -48,63 +48,38 @@ R\pipeline(...$callables);
 ```php
 use Result as R;
 
-/*
-We create pipeline that reads file by name, proceeds it's content
-and saves result into other file. 
-*/
-$pipeline = R\pipeline('readFile', 'proceedContent', makeFileWriter('/tmp/output_file'));
 
-/*
-Call pipeline
-*/
-$result = $pipeline('/tmp/input_file');
-
-R\ifFail($result, function ($error) {
-    fwrite(STDERR, $error);
-});
-
-/*
-Read the file. If file exists return content wrapped into
-ok result, otherwise return fail result with error message.
-*/
-function readFile($filename)
-{
-    if (file_exists($filename)) {
-        return R\ok(file_get_contents($filename));
-    }
-    
-    return R\fail("Can't read the file!");
+$readFile = function($filename) {
+    return R\with($filename, 'file_exists', 'file_get_contents', function () {
+        return "Can't read the file.";
+    });
 }
 
-/*
-Do something with the content. We pass content into our function
-"doSomethingWithContent" which returns processed content
-or throws an exception if content couldn't be processed.
-*/
-function proceedContent($content)
-{
-    $transform = function ($exception) 
-    {
+$proceedFile = function($content) {
+    $transform = function ($exception) {
         return $exception->getMessage();
     };
-    
+
     return R\tryCatch('doSomethingWithContent', $transform, $content);
 }
 
-/*
-Make file writer. It returns ok if file saved successfully
-or fail when save returned error.
-*/
-function makeFileWriter($filename)
-{
-    return function ($content) use ($filename)
-    {
+$saveFile = function($filename) {
+    return function ($content) use ($filename) {
         $bytesWritten = file_put_contents($filename, $content);
-        
+
         return $bytesWritten === false
             ? R\fail("Can't save the file!")
             : R\ok();
     }
 }
+
+$pipeline = R\pipeline($readFile, $proceedFile, $saveFile('/tmp/output_file'));
+
+$result = $pipeline('/tmp/input_file');
+
+R\ifOk($result, function () {
+    echo 'File successfully saved.';
+});
+
 
 ```

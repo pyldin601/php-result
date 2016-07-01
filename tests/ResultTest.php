@@ -183,4 +183,21 @@ class ResultTest extends \PHPUnit_Framework_TestCase
             $this->assertEquals('bar', $e->getMessage());
         }
     }
+    
+    public function testWithValue()
+    {
+        $filename = __DIR__."/fixtures/somefile";
+        $ifFalse = function ($filename) {
+            return "File $filename not exists.";
+        };
+
+        $one = R\with($filename, 'file_exists', 'file_get_contents', $ifFalse);
+        $two = R\with('/some_non_existent_file', 'file_exists', 'file_get_contents', $ifFalse);
+
+        $this->assertTrue(R\isOk($one));
+        $this->assertEquals('some file content', R\valueOf($one));
+
+        $this->assertTrue(R\isFail($two));
+        $this->assertContains('not exists', R\valueOf($two));
+    }
 }

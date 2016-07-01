@@ -223,3 +223,27 @@ function getOrThrow(callable $result, $exceptionClass = \Exception::class)
     }
     throw new $exceptionClass(valueOf($result));
 }
+
+/**
+ * Tests $value using $test callable.
+ *
+ * If the test returns true, it applies $ifTrue to the $value
+ * and returns value wrapped into `ok` result.
+ *
+ * If the test returns false, it applies $ifFalse to the $value
+ * and returns value wrapped into `fail` result.
+ *
+ * @param mixed $value
+ * @param callable $test
+ * @param callable $ifTrue
+ * @param callable $ifFalse
+ * @return \Closure
+ */
+function with($value, callable $test, callable $ifTrue, callable $ifFalse)
+{
+    if ($test($value)) {
+        return ok($ifTrue($value));
+    }
+
+    return fail($ifFalse($value));
+}
