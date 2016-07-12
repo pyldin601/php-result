@@ -69,24 +69,6 @@ class ResultTest extends \PHPUnit_Framework_TestCase
         $this->assertNull(R\valueOf($result));
     }
 
-    public function testBadMethodCall()
-    {
-        $r1 = R\ok();
-        $r2 = R\fail();
-
-        try {
-            $r1('foo');
-            $this->fail();
-        } catch (\BadMethodCallException $exception) {
-        }
-
-        try {
-            $r2('foo');
-            $this->fail();
-        } catch (\BadMethodCallException $exception) {
-        }
-    }
-
     public function testTryCatch()
     {
         $result = R\tryCatch(function () {
