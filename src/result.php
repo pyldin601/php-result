@@ -22,15 +22,8 @@ const REDUCE_FUNCTION = 'Result\bind';
  */
 function create($type, $value)
 {
-    return function ($method) use ($type, $value) {
-        switch ($method) {
-            case VALUE_METHOD:
-                return $value;
-            case TYPE_METHOD:
-                return $type;
-            default:
-                throw new \BadMethodCallException;
-        }
+    return function ($callable) use ($type, $value) {
+        return $callable($type, $value);
     };
 }
 
@@ -119,7 +112,9 @@ function notNull(callable $callable, ...$args)
  */
 function typeOf(callable $result)
 {
-    return $result('type');
+    return $result(function ($type, $value) {
+        return $type;
+    });
 }
 
 /**
@@ -130,7 +125,9 @@ function typeOf(callable $result)
  */
 function valueOf(callable $result)
 {
-    return $result('value');
+    return $result(function ($type, $value) {
+        return $value;
+    });
 }
 
 /**
