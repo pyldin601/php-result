@@ -11,8 +11,6 @@ const TYPE_METHOD = 'type';
 const REDUCE_FUNCTION = 'Result\bind';
 
 /**
- * Internal function.
- *
  * Creates result with given type and value.
  *
  * @param string $type
