@@ -74,7 +74,7 @@ function valueOf(callable $result)
 }
 
 /**
- * If $callable throws an exception, it wraps the exception 
+ * If $callable throws an exception, it wraps the exception
  * into `fail` result. Otherwise it returns `ok` with result of $callable.
  *
  * You can optionally provide an exception transform
