@@ -50,11 +50,36 @@ function fail($value = null)
 }
 
 /**
- * If your $callable throws an exception on failure, it
- * wraps the exception into `fail` result. Otherwise it
- * returns `ok` with result of $callable.
+ * Returns type of result.
  *
- * You can optionally provide an exception transformation
+ * @param callable $result
+ * @return mixed
+ */
+function typeOf(callable $result)
+{
+    return $result(function ($type, $value) {
+        return $type;
+    });
+}
+
+/**
+ * Returns value of result.
+ *
+ * @param callable $result
+ * @return mixed
+ */
+function valueOf(callable $result)
+{
+    return $result(function ($type, $value) {
+        return $value;
+    });
+}
+
+/**
+ * If $callable throws an exception, it wraps the exception 
+ * into `fail` result. Otherwise it returns `ok` with result of $callable.
+ *
+ * You can optionally provide an exception transform
  * function to cast the exception to the necessary form.
  *
  * @param callable $callable
@@ -102,32 +127,6 @@ function notNull(callable $callable, ...$args)
     $result = $callable(...$args);
 
     return is_null($result) ? fail() : ok($result);
-}
-
-/**
- * Returns type of result.
- *
- * @param callable $result
- * @return mixed
- */
-function typeOf(callable $result)
-{
-    return $result(function ($type, $value) {
-        return $type;
-    });
-}
-
-/**
- * Returns value of result.
- *
- * @param callable $result
- * @return mixed
- */
-function valueOf(callable $result)
-{
-    return $result(function ($type, $value) {
-        return $value;
-    });
 }
 
 /**
