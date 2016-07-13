@@ -5,9 +5,6 @@ namespace Result;
 const RESULT_OK = 'ok';
 const RESULT_FAIL = 'fail';
 
-const VALUE_METHOD = 'value';
-const TYPE_METHOD = 'type';
-
 const REDUCE_FUNCTION = 'Result\bind';
 
 /**
