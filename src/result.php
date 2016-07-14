@@ -13,7 +13,6 @@ const REDUCE_FUNCTION = 'Result\bind';
  * @param string $type
  * @param mixed $value
  * @return \Closure
- * @throws \BadMethodCallException
  */
 function create($type, $value)
 {
