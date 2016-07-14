@@ -71,6 +71,19 @@ function valueOf(callable $result)
 }
 
 /**
+ * Returns string representation of result.
+ *
+ * @param callable $result
+ * @return string
+ */
+function toStr(callable $result)
+{
+    return $result(function ($type, $value) {
+        return sprintf("%s(%s)", $type, $value);
+    });
+}
+
+/**
  * If $callable throws an exception, it wraps the exception
  * into `fail` result. Otherwise it returns `ok` with result of $callable.
  *

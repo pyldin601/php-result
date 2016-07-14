@@ -45,6 +45,15 @@ class ResultTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($flag);
     }
 
+    public function testToString()
+    {
+        $ok = R\ok('good');
+        $fail = R\fail('bad');
+
+        $this->assertEquals('ok(good)', R\toStr($ok));
+        $this->assertEquals('fail(bad)', R\toStr($fail));
+    }
+
     public function testResultify()
     {
         $result = R\resultify(function () {
