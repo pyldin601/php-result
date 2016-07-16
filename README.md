@@ -4,42 +4,31 @@
 [![Test Coverage](https://codeclimate.com/github/pldin601/php-result/badges/coverage.svg)](https://codeclimate.com/github/pldin601/php-result/coverage)
 [![Issue Count](https://codeclimate.com/github/pldin601/php-result/badges/issue_count.svg)](https://codeclimate.com/github/pldin601/php-result)
 
-Result is an abstraction used for returning and propagating errors.
-It has two variants: `ok`, representing success and containing a value,
-and `fail`, representing error and containing an error value.
+Result is an abstraction that can be used for returning and propagating errors.
+Result can be `ok`, representing success and containing a value,
+or `fail`, representing error and containing an error value.
+
 Inspired by Rust's module `std::result`.
 
 ## Functions
 ```php
 use Result as R;
 
-// Create result by hands
-$ok = R\ok($value);
-$fail = R\fail($value);
+R\ok('foo');
+R\fail($value);
 
-// Create result from results of execution a callable
+R\resultify($callable, ...$args);
+R\notNull($callable, ...$args);
+R\tryCatch($callable, $exceptionTransformCallable, ...$args);
 
-// If callable throws an exception
-R\tryCatch($callable, $exceptionTransformCallable, $value);
-
-// If callable returns NULL on fail
-R\notNull($callable);
-
-// In any other case
-R\resultify($callable);
-
-// Check whether result is ok or fail
 R\isOk($result);
 R\isFail($result);
 
-// Invoke callable if result is ok or fail
 R\ifOk($result, $callable);
 R\ifFail($result, $callable);
 
-// Raise value from result or throw exception on fail
 R\getOrThrow($result, $exceptionClass);
 
-// Work with pipelines
 R\bind($result, $callable);
 R\pipeline(...$callables);
 ```
@@ -80,6 +69,5 @@ $result = $pipeline('/tmp/input_file');
 R\ifOk($result, function () {
     echo 'File successfully saved.';
 });
-
 
 ```
