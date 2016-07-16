@@ -18,7 +18,8 @@
       "Tests\\": "tests/"
     },
     "files": [
-      "src/result.php"
+      "src/result.php",
+      "src/util.php"
     ]
   },
   "require-dev": {
